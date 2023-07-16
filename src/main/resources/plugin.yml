@@ -1,0 +1,23 @@
+name: MkojServerPlugin
+version: 1.0.0
+main: com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
+description: An plugin for mkoj server
+author: mkihr-ojisan
+website: https://mc.mkihr-ojisan.com
+api-version: '1.20'
+commands:
+  unyo:
+    description: うにょ
+    usage: /<command> [target]
+    permission: mkoj_server_plugin.unyo
+  invite:
+    description: 指定したプレイヤーをホワイトリストに追加します
+    usage: /<command> player_name
+    permission: mkoj_server_plugin.invite
+permissions:
+  mkoj_server_plugin.unyo:
+    description: うにょ
+    default: true
+  mkoj_server_plugin.invite:
+    description: プレイヤーをホワイトリストに追加する権限
+    default: true
