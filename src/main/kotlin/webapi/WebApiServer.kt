@@ -26,7 +26,7 @@ object WebApiServer {
         JettyWebSocketServletContainerInitializer.configure(context) { _, wsContainer ->
             wsContainer.maxTextMessageSize = 65535
             wsContainer.idleTimeout = Duration.ofDays(1)
-            wsContainer.addMapping("/ws") { _, _ -> WebSocket() }
+            wsContainer.addMapping("/ws") { req, _ -> WebSocket(req.headers) }
         }
 
         server.start()

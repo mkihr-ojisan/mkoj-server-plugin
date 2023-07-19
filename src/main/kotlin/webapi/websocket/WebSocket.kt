@@ -6,13 +6,16 @@ import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.WebSocketAdapter
 
-class WebSocket : WebSocketAdapter() {
+class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapter() {
     private val subscribedServices = HashMap<String, WebSocketService>()
+
+    private lateinit var remoteAddress: String
 
     override fun onWebSocketConnect(session: Session) {
         super.onWebSocketConnect(session)
 
-        MkojServerPlugin.getInstance().logger.info("WebSocket connected from ${session.remoteAddress}")
+        remoteAddress = headers["X-Forwarded-For"]?.firstOrNull() ?: session.remoteAddress.toString()
+        MkojServerPlugin.getInstance().logger.info("WebSocket connected from $remoteAddress")
     }
 
     override fun onWebSocketText(message: String) {
@@ -59,7 +62,7 @@ class WebSocket : WebSocketAdapter() {
             service.stop()
         }
 
-        MkojServerPlugin.getInstance().logger.info("WebSocket disconnected from ${session.remoteAddress}")
+        MkojServerPlugin.getInstance().logger.info("WebSocket disconnected from $remoteAddress")
     }
 }
 
