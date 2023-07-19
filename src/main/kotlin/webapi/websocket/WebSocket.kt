@@ -87,5 +87,5 @@ abstract class WebSocketService(protected val webSocket: WebSocket) {
         }
     }
 
-    protected open class Message(val type: String)
+    protected open class Message(@Suppress("unused") val type: String)
 }

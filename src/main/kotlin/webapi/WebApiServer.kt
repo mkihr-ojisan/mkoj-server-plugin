@@ -9,7 +9,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer
 import java.time.Duration
-import java.time.temporal.ChronoUnit
 
 object WebApiServer {
     private val server = Server()
