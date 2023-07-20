@@ -44,7 +44,11 @@ class InviteCommand : CommandExecutor {
                         if (Bukkit.getOfflinePlayer(bedrockUuid).isWhitelisted) {
                             sender.sendMessage(Component.text("Bedrock Edition のプレイヤー $playerName は既にホワイトリストに登録されています"))
                         } else {
-                            Bukkit.getOfflinePlayer(bedrockUuid).isWhitelisted = true
+                            object: BukkitRunnable() {
+                                override fun run() {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fwhitelist add \"${playerName.replace("%20", " ")}\"")
+                                }
+                            }.runTask(MkojServerPlugin.getInstance())
                             sender.sendMessage(Component.text("Bedrock Edition のプレイヤー $playerName をホワイトリストに登録しました"))
                         }
                     }
