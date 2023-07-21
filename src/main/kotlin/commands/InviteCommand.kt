@@ -36,7 +36,11 @@ class InviteCommand : CommandExecutor {
                         if (Bukkit.getOfflinePlayer(javaUuid).isWhitelisted) {
                             sender.sendMessage(Component.text("Java Edition のプレイヤー $playerName は既にホワイトリストに登録されています"))
                         } else {
-                            Bukkit.getOfflinePlayer(javaUuid).isWhitelisted = true
+                            object: BukkitRunnable() {
+                                override fun run() {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist add $playerName")
+                                }
+                            }.runTask(MkojServerPlugin.getInstance())
                             sender.sendMessage(Component.text("Java Edition のプレイヤー $playerName をホワイトリストに登録しました"))
                         }
                     }
