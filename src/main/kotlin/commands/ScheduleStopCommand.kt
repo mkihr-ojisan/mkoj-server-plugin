@@ -17,7 +17,12 @@ class ScheduleStopCommand : CommandExecutor, Listener, TabCompleter {
         Bukkit.getPluginManager().registerEvents(this, MkojServerPlugin.getInstance())
     }
 
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+    override fun onCommand(
+            sender: CommandSender,
+            command: Command,
+            label: String,
+            args: Array<out String>
+    ): Boolean {
         if (args.isNotEmpty() && !(args.size == 1 && args[0] == "cancel")) {
             return false
         }
@@ -56,10 +61,10 @@ class ScheduleStopCommand : CommandExecutor, Listener, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        label: String,
-        args: Array<out String>?
+            sender: CommandSender,
+            command: Command,
+            label: String,
+            args: Array<out String>?
     ): MutableList<String>? {
         return mutableListOf("cancel")
     }

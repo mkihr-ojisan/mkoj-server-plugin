@@ -5,6 +5,7 @@ import com.earth2me.essentials.Essentials
 import com.google.gson.annotations.SerializedName
 import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
 import com.mkihr_ojisan.mkoj_server_plugin.util.runTaskTimer
+import java.util.*
 import net.ess3.api.events.AfkStatusChangeEvent
 import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
@@ -15,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.scheduler.BukkitRunnable
 import org.geysermc.floodgate.api.FloodgateApi
 import org.geysermc.floodgate.api.player.FloodgatePlayer
-import java.util.*
 
 class PlayersService(webSocket: WebSocket) : WebSocketService(webSocket), Listener {
     private val floodgateApi = FloodgateApi.getInstance()
@@ -51,7 +51,9 @@ class PlayersService(webSocket: WebSocket) : WebSocketService(webSocket), Listen
 
     @EventHandler
     fun onAfkStatusChange(event: AfkStatusChangeEvent) {
-        if (event.cause != AfkStatusChangeEvent.Cause.JOIN && event.cause != AfkStatusChangeEvent.Cause.QUIT) {
+        if (event.cause != AfkStatusChangeEvent.Cause.JOIN &&
+                        event.cause != AfkStatusChangeEvent.Cause.QUIT
+        ) {
             updatedPlayers.add(event.affected.base)
         }
     }
@@ -94,36 +96,38 @@ class PlayersService(webSocket: WebSocket) : WebSocketService(webSocket), Listen
         this.updatedPlayers.clear()
 
         object : BukkitRunnable() {
-            override fun run() {
-                updatedPlayers.forEach { player ->
-                    send(PlayerUpdateMessage(getPlayer(player)))
+                    override fun run() {
+                        updatedPlayers.forEach { player ->
+                            send(PlayerUpdateMessage(getPlayer(player)))
+                        }
+                    }
                 }
-            }
-        }.runTaskAsynchronously(MkojServerPlugin.getInstance())
+                .runTaskAsynchronously(MkojServerPlugin.getInstance())
     }
 
     private fun getPlayer(
-        player: org.bukkit.entity.Player,
+            player: org.bukkit.entity.Player,
     ): Player {
         val floodgatePlayer: FloodgatePlayer? = floodgateApi.getPlayer(player.uniqueId)
         val essentialsUser = essentials.getUser(player)
 
-        val name = if (floodgatePlayer?.isLinked == false) {
-            floodgatePlayer.username
-        } else {
-            player.name
-        }
+        val name =
+                if (floodgatePlayer?.isLinked == false) {
+                    floodgatePlayer.username
+                } else {
+                    player.name
+                }
 
         return Player(
-            name,
-            player.uniqueId,
-            player.lastLogin,
-            if (floodgatePlayer != null) PlayerType.Bedrock else PlayerType.Java,
-            essentialsUser.isAfk,
-            player.health,
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 0.0,
-            player.getAttribute(Attribute.GENERIC_ARMOR)?.value ?: 0.0,
-            player.foodLevel
+                name,
+                player.uniqueId,
+                player.lastLogin,
+                if (floodgatePlayer != null) PlayerType.Bedrock else PlayerType.Java,
+                essentialsUser.isAfk,
+                player.health,
+                player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 0.0,
+                player.getAttribute(Attribute.GENERIC_ARMOR)?.value ?: 0.0,
+                player.foodLevel
         )
     }
 
@@ -134,22 +138,19 @@ class PlayersService(webSocket: WebSocket) : WebSocketService(webSocket), Listen
     private data class PlayerUpdateMessage(val player: Player) : Message("player_update")
 
     private data class Player(
-        val name: String,
-        val uuid: UUID,
-        val lastLogin: Long,
-        val type: PlayerType,
-        val afk: Boolean,
-        val health: Double,
-        val maxHealth: Double,
-        val armor: Double,
-        val food: Int
+            val name: String,
+            val uuid: UUID,
+            val lastLogin: Long,
+            val type: PlayerType,
+            val afk: Boolean,
+            val health: Double,
+            val maxHealth: Double,
+            val armor: Double,
+            val food: Int
     )
 
     private enum class PlayerType {
-        @SerializedName("java")
-        Java,
-
-        @SerializedName("bedrock")
-        Bedrock
+        @SerializedName("java") Java,
+        @SerializedName("bedrock") Bedrock
     }
 }

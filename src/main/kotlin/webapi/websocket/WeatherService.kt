@@ -20,30 +20,24 @@ class WeatherService(webSocket: WebSocket) : WebSocketService(webSocket), Listen
 
     @EventHandler
     fun onWeatherChange(event: org.bukkit.event.weather.WeatherChangeEvent) {
-        runTaskLaterAsynchronously(1) {
-            sendWeather()
-        }
+        runTaskLaterAsynchronously(1) { sendWeather() }
     }
 
     private fun sendWeather() {
         val world = Bukkit.getWorlds()[0]
-        val (weather, duration) = when {
-            world.isThundering -> Pair(Weather.Thunder, world.thunderDuration)
-            world.hasStorm() -> Pair(Weather.Rain, world.weatherDuration)
-            else -> Pair(Weather.Clear, world.weatherDuration)
-        }
+        val (weather, duration) =
+                when {
+                    world.isThundering -> Pair(Weather.Thunder, world.thunderDuration)
+                    world.hasStorm() -> Pair(Weather.Rain, world.weatherDuration)
+                    else -> Pair(Weather.Clear, world.weatherDuration)
+                }
         send(WeatherMessage(weather, duration))
     }
 
     private data class WeatherMessage(val weather: Weather, val duration: Int) : Message("weather")
     private enum class Weather {
-        @SerializedName("clear")
-        Clear,
-
-        @SerializedName("rain")
-        Rain,
-
-        @SerializedName("thunder")
-        Thunder
+        @SerializedName("clear") Clear,
+        @SerializedName("rain") Rain,
+        @SerializedName("thunder") Thunder
     }
 }

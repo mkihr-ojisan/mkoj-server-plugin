@@ -14,7 +14,8 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
     override fun onWebSocketConnect(session: Session) {
         super.onWebSocketConnect(session)
 
-        remoteAddress = headers["X-Forwarded-For"]?.firstOrNull() ?: session.remoteAddress.toString()
+        remoteAddress =
+                headers["X-Forwarded-For"]?.firstOrNull() ?: session.remoteAddress.toString()
         MkojServerPlugin.getInstance().logger.info("WebSocket connected from $remoteAddress")
     }
 
@@ -32,13 +33,15 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
                         throw Exception("already subscribed")
                     }
 
-                    val service = WebSocketService.services[serviceName]?.constructors?.first()
-                        ?.newInstance(this) as WebSocketService?
-                        ?: throw Exception("not found")
+                    val service =
+                            WebSocketService.services[serviceName]?.constructors
+                                    ?.first()
+                                    ?.newInstance(this) as
+                                    WebSocketService?
+                                    ?: throw Exception("not found")
                     service.start()
                     subscribedServices[serviceName] = service
                 }
-
                 "unsubscribe" -> {
                     val serviceName = json.asJsonObject.get("service").asString
 
@@ -49,7 +52,6 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
                     subscribedServices[serviceName]?.stop()
                     subscribedServices.remove(serviceName)
                 }
-
                 else -> throw Exception("invalid type")
             }
         } catch (e: Exception) {
@@ -60,9 +62,7 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
     override fun onWebSocketClose(statusCode: Int, reason: String?) {
         super.onWebSocketClose(statusCode, reason)
 
-        subscribedServices.forEach { (_, service) ->
-            service.stop()
-        }
+        subscribedServices.forEach { (_, service) -> service.stop() }
 
         MkojServerPlugin.getInstance().logger.info("WebSocket disconnected from $remoteAddress")
     }
@@ -70,13 +70,14 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
 
 abstract class WebSocketService(protected val webSocket: WebSocket) {
     companion object {
-        val services = hashMapOf<String, Class<out WebSocketService>>(
-            "tps5s" to Tps5sService::class.java,
-            "players" to PlayersService::class.java,
-            "chat" to ChatService::class.java,
-            "weather" to WeatherService::class.java,
-            "time" to TimeService::class.java,
-        )
+        val services =
+                hashMapOf<String, Class<out WebSocketService>>(
+                        "tps5s" to Tps5sService::class.java,
+                        "players" to PlayersService::class.java,
+                        "chat" to ChatService::class.java,
+                        "weather" to WeatherService::class.java,
+                        "time" to TimeService::class.java,
+                )
     }
 
     abstract fun start()

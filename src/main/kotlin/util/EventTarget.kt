@@ -23,13 +23,13 @@ open class Event
 annotation class EventHandler
 
 open class EventListener {
-    private val events: Map<Class<*>, (Event) -> Any> = javaClass.methods
-        .filter { it.isAnnotationPresent(EventHandler::class.java) }.associate { method ->
-            val eventType = method.parameterTypes[0]
-            eventType to { event: Event ->
-                method.invoke(this, event)
-            }
-        }
+    private val events: Map<Class<*>, (Event) -> Any> =
+            javaClass.methods
+                    .filter { it.isAnnotationPresent(EventHandler::class.java) }
+                    .associate { method ->
+                        val eventType = method.parameterTypes[0]
+                        eventType to { event: Event -> method.invoke(this, event) }
+                    }
 
     fun dispatch(event: Event) {
         events[event.javaClass]?.invoke(event)

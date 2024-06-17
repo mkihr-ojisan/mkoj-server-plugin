@@ -1,12 +1,12 @@
 package com.mkihr_ojisan.mkoj_server_plugin.webapi.websocket
 
 import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
+import java.util.*
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import java.util.*
 
 class ChatService(webSocket: WebSocket) : WebSocketService(webSocket), Listener {
     override fun start() {
@@ -20,10 +20,10 @@ class ChatService(webSocket: WebSocket) : WebSocketService(webSocket), Listener 
     @EventHandler
     fun onPlayerChat(event: io.papermc.paper.event.player.AsyncChatEvent) {
         send(
-            ChatMessage(
-                Player(event.player.name, event.player.uniqueId),
-                (event.message() as TextComponent).content()
-            )
+                ChatMessage(
+                        Player(event.player.name, event.player.uniqueId),
+                        (event.message() as TextComponent).content()
+                )
         )
     }
 
