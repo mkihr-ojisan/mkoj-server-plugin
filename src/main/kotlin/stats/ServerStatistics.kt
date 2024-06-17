@@ -1,14 +1,10 @@
-package com.mkihr_ojisan.mkoj_server_plugin
+package com.mkihr_ojisan.mkoj_server_plugin.stats
 
-import org.bukkit.scheduler.BukkitRunnable
+import com.mkihr_ojisan.mkoj_server_plugin.util.runTaskTimer
 
 object ServerStatistics {
     fun init() {
-        object : BukkitRunnable() {
-            override fun run() {
-                tick()
-            }
-        }.runTaskTimer(MkojServerPlugin.getInstance(), 0, 1)
+        runTaskTimer(0, 1, this::tick)
     }
 
     private const val TIMESTAMP_HISTORY_SIZE = 101
@@ -28,4 +24,12 @@ object ServerStatistics {
         val first = timestamp.first()
         return (TIMESTAMP_HISTORY_SIZE - 1) / ((last - first) / 1000.0)
     }
+
+    // ロードされたチャンク数
+    // 生成されたチャンク数
+    // エンティティ数
+    // dynmapのれんだーきゅー
+    // CPU
+    // memory
+    // disk
 }

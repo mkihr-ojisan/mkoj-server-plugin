@@ -2,6 +2,7 @@ package com.mkihr_ojisan.mkoj_server_plugin.webapi.websocket
 
 import com.google.gson.annotations.SerializedName
 import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
+import com.mkihr_ojisan.mkoj_server_plugin.util.runTaskLaterAsynchronously
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
@@ -19,7 +20,9 @@ class WeatherService(webSocket: WebSocket) : WebSocketService(webSocket), Listen
 
     @EventHandler
     fun onWeatherChange(event: org.bukkit.event.weather.WeatherChangeEvent) {
-        sendWeather()
+        runTaskLaterAsynchronously(1) {
+            sendWeather()
+        }
     }
 
     private fun sendWeather() {
@@ -36,8 +39,10 @@ class WeatherService(webSocket: WebSocket) : WebSocketService(webSocket), Listen
     private enum class Weather {
         @SerializedName("clear")
         Clear,
+
         @SerializedName("rain")
         Rain,
+
         @SerializedName("thunder")
         Thunder
     }

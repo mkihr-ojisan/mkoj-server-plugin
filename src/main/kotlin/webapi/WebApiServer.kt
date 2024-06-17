@@ -1,5 +1,6 @@
 package com.mkihr_ojisan.mkoj_server_plugin.webapi
 
+import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
 import com.mkihr_ojisan.mkoj_server_plugin.webapi.websocket.WebSocket
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -8,6 +9,7 @@ import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer
+import java.net.URL
 import java.time.Duration
 
 object WebApiServer {
@@ -37,7 +39,37 @@ object WebApiServer {
 }
 
 class WebApiServlet : jakarta.servlet.http.HttpServlet() {
+    private val gson = com.google.gson.Gson()
+
     override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-        resp.writer.println("Hello, World!")
+        val url = URL(req.requestURL.toString())
+
+        MkojServerPlugin.getInstance().logger.info("GET ${url.path}")
+
+        try {
+            val path = url.path.split("/")
+            if (path.size < 2) throw ErrorResponse(404, "Not Found")
+
+            when (path[1]) {
+                "player" -> {
+                    if (path.size < 3) throw ErrorResponse(404, "Not Found")
+
+                    val uuid = path[2]
+                    resp.contentType = "application/json"
+                    resp.writer.write(gson.toJson(getPlayerStats(uuid)))
+                }
+
+                else -> throw ErrorResponse(404, "Not Found")
+            }
+        } catch (e: ErrorResponse) {
+            resp.status = e.status
+            resp.writer.write(e.message ?: "")
+        } catch (e: Exception) {
+            resp.status = 500
+            resp.writer.write("Internal Server Error")
+            e.printStackTrace()
+        }
     }
 }
+
+class ErrorResponse(val status: Int, message: String) : Exception(message)

@@ -1,6 +1,6 @@
 package com.mkihr_ojisan.mkoj_server_plugin.webapi.websocket
 
-import com.mkihr_ojisan.mkoj_server_plugin.ServerStatistics
+import com.mkihr_ojisan.mkoj_server_plugin.stats.ServerStatistics
 import java.util.*
 
 class Tps5sService(webSocket: WebSocket) : WebSocketService(webSocket) {

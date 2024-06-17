@@ -38,6 +38,7 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
                     service.start()
                     subscribedServices[serviceName] = service
                 }
+
                 "unsubscribe" -> {
                     val serviceName = json.asJsonObject.get("service").asString
 
@@ -48,6 +49,7 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
                     subscribedServices[serviceName]?.stop()
                     subscribedServices.remove(serviceName)
                 }
+
                 else -> throw Exception("invalid type")
             }
         } catch (e: Exception) {
