@@ -39,6 +39,8 @@ class MkojServerPlugin : JavaPlugin(), Listener {
         WebApiServer.start()
 
         ServerStatistics.init()
+
+        ChatHistory.init()
     }
 
     override fun onDisable() {

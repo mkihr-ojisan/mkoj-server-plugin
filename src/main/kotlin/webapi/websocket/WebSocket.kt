@@ -2,6 +2,11 @@ package com.mkihr_ojisan.mkoj_server_plugin.webapi.websocket
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.mkihr_ojisan.mkoj_server_plugin.ChatHistory
+import com.mkihr_ojisan.mkoj_server_plugin.ChatHistoryEntry
+import com.mkihr_ojisan.mkoj_server_plugin.ChatHistoryEntryType
+import com.mkihr_ojisan.mkoj_server_plugin.ChatSender
+import com.mkihr_ojisan.mkoj_server_plugin.ChatSenderType
 import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.WebSocketAdapter
@@ -51,6 +56,23 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
 
                     subscribedServices[serviceName]?.stop()
                     subscribedServices.remove(serviceName)
+                }
+                "say" -> {
+                    val sayMessage = json.asJsonObject.get("message").asString
+                    MkojServerPlugin.getInstance().server.onlinePlayers.forEach {
+                        it.sendMessage("[Web] $sayMessage")
+                    }
+                    MkojServerPlugin.getInstance().logger.info("[Web] $sayMessage")
+                    ChatHistory.addEntry(
+                            ChatHistoryEntry(
+                                    ChatHistoryEntryType.MESSAGE,
+                                    ChatSender(ChatSenderType.WEB, null, null),
+                                    sayMessage
+                            )
+                    )
+                }
+                "ping" -> {
+                    session.remote.sendString("""{"type":"pong"}""")
                 }
                 else -> throw Exception("invalid type")
             }
