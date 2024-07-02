@@ -41,6 +41,8 @@ class MkojServerPlugin : JavaPlugin(), Listener {
         ServerStatistics.init()
 
         ChatHistory.init()
+
+        Motd.init()
     }
 
     override fun onDisable() {

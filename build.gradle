@@ -13,6 +13,7 @@ repositories {
     maven { url = "https://repo.opencollab.dev/maven-snapshots/" }
     maven { url = "https://repo.opencollab.dev/maven-releases/" }
     maven { url = "https://repo.essentialsx.net/releases/" }
+    maven { url = "https://repo.viaversion.com/everything/" }
 }
 
 dependencies {
@@ -20,6 +21,9 @@ dependencies {
     compileOnly("org.geysermc.floodgate:api:2.2.2-SNAPSHOT")
     compileOnly("org.geysermc.geyser:api:2.1.1-SNAPSHOT")
     compileOnly("net.essentialsx:EssentialsX:2.19.0")
+    compileOnly("com.viaversion:viaversion-api:latest.release")
+    compileOnly("com.viaversion:viabackwards:latest.release")
+    compileOnly("com.viaversion:viarewind:latest.release")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 

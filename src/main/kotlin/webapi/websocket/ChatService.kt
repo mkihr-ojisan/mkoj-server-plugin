@@ -5,16 +5,15 @@ import com.mkihr_ojisan.mkoj_server_plugin.ChatHistoryEntry
 import com.mkihr_ojisan.mkoj_server_plugin.NewEntryEvent
 import com.mkihr_ojisan.mkoj_server_plugin.util.EventHandler
 import com.mkihr_ojisan.mkoj_server_plugin.util.EventListener
-import java.util.*
 
 class ChatService(webSocket: WebSocket) : WebSocketService(webSocket) {
     private val eventListener =
-            object : EventListener() {
-                @EventHandler
-                fun onNewEntry(event: NewEntryEvent) {
-                    send(ChatMessage(event.entry))
-                }
+        object : EventListener() {
+            @EventHandler
+            fun onNewEntry(event: NewEntryEvent) {
+                send(ChatMessage(event.entry))
             }
+        }
 
     override fun start() {
         ChatHistory.getHistory().forEach { send(ChatMessage(it)) }

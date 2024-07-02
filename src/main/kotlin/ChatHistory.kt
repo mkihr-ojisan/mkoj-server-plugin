@@ -2,10 +2,11 @@ package com.mkihr_ojisan.mkoj_server_plugin
 
 import com.mkihr_ojisan.mkoj_server_plugin.util.EventListener
 import com.mkihr_ojisan.mkoj_server_plugin.util.EventTarget
-import java.util.UUID
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import java.util.*
+import kotlin.collections.ArrayDeque
 
 object ChatHistory : EventTarget<EventListener>(), Listener {
     private const val MAX_HISTORY_SIZE = 100
@@ -13,9 +14,9 @@ object ChatHistory : EventTarget<EventListener>(), Listener {
 
     fun init() {
         MkojServerPlugin.getInstance()
-                .server
-                .pluginManager
-                .registerEvents(this, MkojServerPlugin.getInstance())
+            .server
+            .pluginManager
+            .registerEvents(this, MkojServerPlugin.getInstance())
         addEntry(ChatHistoryEntry(ChatHistoryEntryType.SERVER_START))
     }
 
@@ -34,50 +35,50 @@ object ChatHistory : EventTarget<EventListener>(), Listener {
     @EventHandler
     private fun onPlayerJoin(event: org.bukkit.event.player.PlayerJoinEvent) {
         addEntry(
-                ChatHistoryEntry(
-                        ChatHistoryEntryType.PLAYER_JOIN,
-                        ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
-                        null
-                )
+            ChatHistoryEntry(
+                ChatHistoryEntryType.PLAYER_JOIN,
+                ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
+                null
+            )
         )
     }
 
     @EventHandler
     private fun onPlayerQuit(event: org.bukkit.event.player.PlayerQuitEvent) {
         addEntry(
-                ChatHistoryEntry(
-                        ChatHistoryEntryType.PLAYER_QUIT,
-                        ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
-                        null
-                )
+            ChatHistoryEntry(
+                ChatHistoryEntryType.PLAYER_QUIT,
+                ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
+                null
+            )
         )
     }
 
     @EventHandler
     private fun onPlayerChat(event: io.papermc.paper.event.player.AsyncChatEvent) {
         addEntry(
-                ChatHistoryEntry(
-                        ChatHistoryEntryType.MESSAGE,
-                        ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
-                        (event.message() as TextComponent).content()
-                )
+            ChatHistoryEntry(
+                ChatHistoryEntryType.MESSAGE,
+                ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
+                (event.message() as TextComponent).content()
+            )
         )
     }
 
     @EventHandler
     private fun onPlayerAdvancementDone(event: org.bukkit.event.player.PlayerAdvancementDoneEvent) {
         addEntry(
-                ChatHistoryEntry(
-                        ChatHistoryEntryType.PLAYER_ADVANCEMENT_DONE,
-                        ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
-                        null,
-                        AdvancementInfo(
-                                event.advancement.key.toString(),
-                                AdvancementType.valueOf(
-                                        event.advancement.display!!.frame().toString()
-                                )
-                        )
+            ChatHistoryEntry(
+                ChatHistoryEntryType.PLAYER_ADVANCEMENT_DONE,
+                ChatSender(ChatSenderType.PLAYER, event.player.name, event.player.uniqueId),
+                null,
+                AdvancementInfo(
+                    event.advancement.key.toString(),
+                    AdvancementType.valueOf(
+                        event.advancement.display!!.frame().toString()
+                    )
                 )
+            )
         )
     }
 }
@@ -106,12 +107,12 @@ enum class AdvancementType {
 data class AdvancementInfo(val key: String, val type: AdvancementType)
 
 data class ChatHistoryEntry(
-        val type: ChatHistoryEntryType,
-        val sender: ChatSender? = null,
-        val message: String? = null,
-        val advancement: AdvancementInfo? = null,
-        val timestamp: Long = System.currentTimeMillis()
+    val type: ChatHistoryEntryType,
+    val sender: ChatSender? = null,
+    val message: String? = null,
+    val advancement: AdvancementInfo? = null,
+    val timestamp: Long = System.currentTimeMillis()
 )
 
 data class NewEntryEvent(val entry: ChatHistoryEntry) :
-        com.mkihr_ojisan.mkoj_server_plugin.util.Event()
+    com.mkihr_ojisan.mkoj_server_plugin.util.Event()

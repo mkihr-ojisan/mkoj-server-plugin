@@ -2,12 +2,7 @@ package com.mkihr_ojisan.mkoj_server_plugin.webapi.websocket
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.mkihr_ojisan.mkoj_server_plugin.ChatHistory
-import com.mkihr_ojisan.mkoj_server_plugin.ChatHistoryEntry
-import com.mkihr_ojisan.mkoj_server_plugin.ChatHistoryEntryType
-import com.mkihr_ojisan.mkoj_server_plugin.ChatSender
-import com.mkihr_ojisan.mkoj_server_plugin.ChatSenderType
-import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
+import com.mkihr_ojisan.mkoj_server_plugin.*
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.WebSocketAdapter
 
@@ -20,7 +15,7 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
         super.onWebSocketConnect(session)
 
         remoteAddress =
-                headers["X-Forwarded-For"]?.firstOrNull() ?: session.remoteAddress.toString()
+            headers["X-Forwarded-For"]?.firstOrNull() ?: session.remoteAddress.toString()
         MkojServerPlugin.getInstance().logger.info("WebSocket connected from $remoteAddress")
     }
 
@@ -39,14 +34,15 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
                     }
 
                     val service =
-                            WebSocketService.services[serviceName]?.constructors
-                                    ?.first()
-                                    ?.newInstance(this) as
-                                    WebSocketService?
-                                    ?: throw Exception("not found")
+                        WebSocketService.services[serviceName]?.constructors
+                            ?.first()
+                            ?.newInstance(this) as
+                                WebSocketService?
+                            ?: throw Exception("not found")
                     service.start()
                     subscribedServices[serviceName] = service
                 }
+
                 "unsubscribe" -> {
                     val serviceName = json.asJsonObject.get("service").asString
 
@@ -57,6 +53,7 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
                     subscribedServices[serviceName]?.stop()
                     subscribedServices.remove(serviceName)
                 }
+
                 "say" -> {
                     val sayMessage = json.asJsonObject.get("message").asString
                     MkojServerPlugin.getInstance().server.onlinePlayers.forEach {
@@ -64,16 +61,18 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
                     }
                     MkojServerPlugin.getInstance().logger.info("[Web] $sayMessage")
                     ChatHistory.addEntry(
-                            ChatHistoryEntry(
-                                    ChatHistoryEntryType.MESSAGE,
-                                    ChatSender(ChatSenderType.WEB, null, null),
-                                    sayMessage
-                            )
+                        ChatHistoryEntry(
+                            ChatHistoryEntryType.MESSAGE,
+                            ChatSender(ChatSenderType.WEB, null, null),
+                            sayMessage
+                        )
                     )
                 }
+
                 "ping" -> {
                     session.remote.sendString("""{"type":"pong"}""")
                 }
+
                 else -> throw Exception("invalid type")
             }
         } catch (e: Exception) {
@@ -93,13 +92,13 @@ class WebSocket(private val headers: Map<String, List<String>>) : WebSocketAdapt
 abstract class WebSocketService(protected val webSocket: WebSocket) {
     companion object {
         val services =
-                hashMapOf<String, Class<out WebSocketService>>(
-                        "tps5s" to Tps5sService::class.java,
-                        "players" to PlayersService::class.java,
-                        "chat" to ChatService::class.java,
-                        "weather" to WeatherService::class.java,
-                        "time" to TimeService::class.java,
-                )
+            hashMapOf<String, Class<out WebSocketService>>(
+                "tps5s" to Tps5sService::class.java,
+                "players" to PlayersService::class.java,
+                "chat" to ChatService::class.java,
+                "weather" to WeatherService::class.java,
+                "time" to TimeService::class.java,
+            )
     }
 
     abstract fun start()

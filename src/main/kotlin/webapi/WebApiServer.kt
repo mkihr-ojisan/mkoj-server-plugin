@@ -1,16 +1,18 @@
 package com.mkihr_ojisan.mkoj_server_plugin.webapi
 
+import com.google.gson.JsonObject
 import com.mkihr_ojisan.mkoj_server_plugin.MkojServerPlugin
+import com.mkihr_ojisan.mkoj_server_plugin.ServerInfo
 import com.mkihr_ojisan.mkoj_server_plugin.webapi.websocket.WebSocket
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import java.net.URL
-import java.time.Duration
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer
+import java.net.URL
+import java.time.Duration
 
 object WebApiServer {
     private val server = Server()
@@ -58,6 +60,16 @@ class WebApiServlet : jakarta.servlet.http.HttpServlet() {
                     resp.contentType = "application/json"
                     resp.writer.write(gson.toJson(getPlayerStats(uuid)))
                 }
+
+                "server-info" -> {
+                    resp.contentType = "application/json"
+                    resp.writer.write(gson.toJson(JsonObject().apply {
+                        addProperty("lowestSupportedVersion", ServerInfo.lowestSupportedVersion)
+                        addProperty("highestSupportedVersion", ServerInfo.highestSupportedVersion)
+                        addProperty("recommendedVersion", ServerInfo.recommendedVersion)
+                    }))
+                }
+
                 else -> throw ErrorResponse(404, "Not Found")
             }
         } catch (e: ErrorResponse) {

@@ -8,17 +8,17 @@ class Tps5sService(webSocket: WebSocket) : WebSocketService(webSocket) {
 
     override fun start() {
         timer.scheduleAtFixedRate(
-                object : TimerTask() {
-                    override fun run() {
-                        if (webSocket.session.isOpen) {
-                            send(Tps5sMessage(ServerStatistics.tps5s() ?: return))
-                        } else {
-                            timer.cancel()
-                        }
+            object : TimerTask() {
+                override fun run() {
+                    if (webSocket.session.isOpen) {
+                        send(Tps5sMessage(ServerStatistics.tps5s() ?: return))
+                    } else {
+                        timer.cancel()
                     }
-                },
-                0,
-                1000
+                }
+            },
+            0,
+            1000
         )
     }
 

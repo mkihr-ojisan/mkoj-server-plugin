@@ -1,20 +1,20 @@
 package com.mkihr_ojisan.mkoj_server_plugin.util
 
 import com.google.gson.JsonParser
+import org.geysermc.floodgate.api.FloodgateApi
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.util.*
-import org.geysermc.floodgate.api.FloodgateApi
 
 object MojangAPI {
     private val client = HttpClient.newHttpClient()
 
     fun getJavaUUID(name: String): UUID? {
         val request =
-                HttpRequest.newBuilder(URI("https://api.mojang.com/users/profiles/minecraft/$name"))
-                        .build()
+            HttpRequest.newBuilder(URI("https://api.mojang.com/users/profiles/minecraft/$name"))
+                .build()
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         val json = JsonParser.parseString(response.body())
 
@@ -29,7 +29,7 @@ object MojangAPI {
 
         json.asJsonObject["id"].asString?.let {
             return UUID.fromString(
-                    it.replaceFirst(Regex("^(.{8})(.{4})(.{4})(.{4})(.{12})$"), "$1-$2-$3-$4-$5")
+                it.replaceFirst(Regex("^(.{8})(.{4})(.{4})(.{4})(.{12})$"), "$1-$2-$3-$4-$5")
             )
         }
 
@@ -38,7 +38,7 @@ object MojangAPI {
 
     fun getBedrockUUID(name: String): UUID? {
         val request =
-                HttpRequest.newBuilder(URI("https://api.geysermc.org/v2/xbox/xuid/$name")).build()
+            HttpRequest.newBuilder(URI("https://api.geysermc.org/v2/xbox/xuid/$name")).build()
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         val json = JsonParser.parseString(response.body())
 

@@ -5,6 +5,12 @@ description: An plugin for mkoj server
 author: mkihr-ojisan
 website: https://mc.mkihr-ojisan.com
 api-version: '1.20'
+depend:
+  - Essentials
+  - Geyser-Spigot
+  - ViaBackwards
+  - ViaRewind
+  - ViaVersion
 commands:
   unyo:
     description: うにょ
