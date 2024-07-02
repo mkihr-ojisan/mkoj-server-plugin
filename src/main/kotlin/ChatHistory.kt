@@ -16,6 +16,7 @@ object ChatHistory : EventTarget<EventListener>(), Listener {
                 .server
                 .pluginManager
                 .registerEvents(this, MkojServerPlugin.getInstance())
+        addEntry(ChatHistoryEntry(ChatHistoryEntryType.SERVER_START))
     }
 
     fun addEntry(entry: ChatHistoryEntry) {
@@ -89,6 +90,7 @@ enum class ChatSenderType {
 data class ChatSender(val type: ChatSenderType, val name: String?, val uuid: UUID?)
 
 enum class ChatHistoryEntryType {
+    SERVER_START,
     MESSAGE,
     PLAYER_JOIN,
     PLAYER_QUIT,
